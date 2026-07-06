@@ -70,6 +70,7 @@
     .story-photo img { display: block; width: 100%; height: 100%; min-height: 330px; max-height: 510px; object-fit: cover; }
     .story-photo figcaption { position: absolute; inset: auto 12px 12px auto; padding: 7px 10px; border-radius: 999px; color: white; background: rgba(30,24,22,.48); backdrop-filter: blur(8px); font-size: 11px; letter-spacing: .08em; }
     .actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 18px 4px 0; color: var(--muted); font-size: 12px; }
+    .actions > span { max-width: 210px; font: 16px/1.55 Georgia, "Songti SC", serif; letter-spacing: .05em; }
     .action-buttons { display: flex; align-items: center; gap: 18px; }
     .edit-menu { display:flex; align-items:center; gap:6px; padding:5px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.36); }
     .edit-choice { color:var(--rose-deep); background:transparent; padding:7px 10px; border-radius:999px; font-size:12px; transition:background .2s, color .2s; }
@@ -86,10 +87,19 @@
     .upload-zone svg { width: 27px; color: var(--rose-deep); }
     .upload-zone strong { color: var(--ink); font-size: 14px; }
     .upload-zone small { font-size: 11px; }
+    .local-note { margin:10px 2px 0; color:var(--muted); font-size:11px; line-height:1.6; }
     #photoInput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     .photo-tools { display: none; align-items: center; justify-content: space-between; margin-top: 9px; font-size: 12px; }
     .photo-tools.visible { display: flex; }
     .remove-photo { background: transparent; color: #a45b58; padding: 6px 0; }
+    .pixel-gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:9px 0 18px; }
+    .pixel-choice { position:relative; padding:0; aspect-ratio:1; overflow:hidden; border:2px solid transparent; border-radius:14px; background:var(--bg-b); transition:transform .2s,border-color .2s,box-shadow .2s; }
+    .pixel-choice:hover { transform:translateY(-2px); }
+    .pixel-choice.selected { border-color:var(--rose-deep); box-shadow:0 0 0 3px color-mix(in srgb,var(--rose) 18%,transparent); }
+    .pixel-choice img { width:100%; height:100%; display:block; object-fit:cover; image-rendering:auto; }
+    .pixel-choice span { position:absolute; right:6px; bottom:6px; width:23px; height:23px; display:grid; place-items:center; border-radius:50%; color:white; background:rgba(45,35,32,.58); font-size:11px; backdrop-filter:blur(5px); }
+    .photo-divider { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:11px; margin:2px 0 9px; }
+    .photo-divider::before,.photo-divider::after { content:""; height:1px; flex:1; background:var(--line); }
     .form-section[hidden] { display:none; }
     dialog { border: 0; border-radius: 24px; padding: 0; color: var(--ink); background: #fffaf5; box-shadow: 0 28px 90px rgba(52,36,31,.3); width: min(430px, calc(100% - 32px)); }
     dialog::backdrop { background: rgba(56,43,39,.35); backdrop-filter: blur(5px); }
@@ -133,7 +143,7 @@
     </section>
     <div class="actions">
       <span>每一天，都是新的纪念。</span>
-      <div class="action-buttons"><button class="storage" id="storageBtn" title="图片和纪念信息仅保存在这台设备"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="7.5" ry="3"/><path d="M4.5 5v7c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V5M4.5 12v7c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-7"/></svg><span>本地保存</span><i class="storage-dot"></i></button><div class="edit-menu" aria-label="自定义页面"><button class="edit-choice" data-editor="date">日期</button><button class="edit-choice" data-editor="theme">色调</button><button class="edit-choice" data-editor="quote">情话</button><button class="edit-choice" data-editor="photo">照片</button><button class="edit-choice" data-editor="title">标题</button></div><button class="share" id="shareBtn">复制分享链接</button></div>
+      <div class="action-buttons"><button class="storage" id="storageBtn" title="临时上传的图片只保存在这台设备"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="7.5" ry="3"/><path d="M4.5 5v7c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V5M4.5 12v7c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-7"/></svg><span>本机草稿</span><i class="storage-dot"></i></button><div class="edit-menu" aria-label="自定义页面"><button class="edit-choice" data-editor="date">日期</button><button class="edit-choice" data-editor="theme">色调</button><button class="edit-choice" data-editor="quote">情话</button><button class="edit-choice" data-editor="photo">照片</button><button class="edit-choice" data-editor="title">标题</button></div><button class="share" id="shareBtn">复制分享链接</button></div>
     </div>
   </main>
 
@@ -150,10 +160,11 @@
         <option value="violet">暮紫 · 梦幻优雅</option>
         <option value="apricot">暖杏 · 柔和温暖</option>
       </select></div>
-      <div class="form-section" data-section="photo"><label for="photoInput">纪念照片</label>
+      <div class="form-section" data-section="photo"><label>选择一张像素回忆</label><div class="pixel-gallery" id="pixelGallery"><button type="button" class="pixel-choice" data-pixel-photo="pixel-1"><img src="assets/pixel-memory-1.png" alt="室内合影像素插画"><span>01</span></button><button type="button" class="pixel-choice" data-pixel-photo="pixel-2"><img src="assets/pixel-memory-2.png" alt="树荫合影像素插画"><span>02</span></button><button type="button" class="pixel-choice" data-pixel-photo="pixel-3"><img src="assets/pixel-memory-3.png" alt="柳树下合影像素插画"><span>03</span></button></div><div class="photo-divider">或者上传本地照片</div><label for="photoInput">自定义照片</label>
       <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
       <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="上传纪念照片"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5M12 3v12m-4-8 4-4 4 4"/></svg><strong id="uploadTitle">选择或拖入一张照片</strong><small>支持 JPG、PNG、WebP、GIF，最大 12 MB</small></div>
       <div class="photo-tools" id="photoTools"><span id="photoName"></span><button type="button" class="remove-photo" id="removePhoto">移除照片</button></div></div>
+      <p class="local-note" data-photo-note hidden>临时上传仅供本机预览，不会进入分享链接。内置像素照片可随链接分享。</p>
       <div class="form-actions"><button type="button" id="cancelBtn">取消</button><button class="save" type="submit">保存纪念</button></div>
     </form>
   </dialog>
@@ -179,14 +190,16 @@
     $('quoteInput').innerHTML = quotes.map((quote, index) => `<option value="${index}">${quote}</option>`).join('');
     const params = new URLSearchParams(location.search);
     const themeNames = ['blush', 'moon', 'sage', 'violet', 'apricot'];
-    const sharedTitle = params.get('title'), sharedDate = params.get('date'), sharedQuote = Number(params.get('quote')), sharedTheme = params.get('theme');
+    const sharedTitle = params.get('title'), sharedDate = params.get('date'), sharedQuote = Number(params.get('quote')), sharedTheme = params.get('theme'), sharedPhoto = params.get('photo');
     const validSharedDate = /^\d{4}-\d{2}-\d{2}$/.test(sharedDate || '');
-    let memory = (sharedTitle && validSharedDate)
-      ? { title: sharedTitle.slice(0, 24), date: sharedDate, quote: sharedQuote >= 0 && sharedQuote < quotes.length ? sharedQuote : 0, theme: themeNames.includes(sharedTheme) ? sharedTheme : 'blush' }
-      : JSON.parse(localStorage.getItem('anniversary-memory') || 'null') || { title: '我们相遇的日子', date: formatInput(defaultDate), quote: 0, theme: 'blush' };
+    const isSharedView = Boolean(sharedTitle && validSharedDate);
+    const builtInPhotos = { 'pixel-1':'assets/pixel-memory-1.png', 'pixel-2':'assets/pixel-memory-2.png', 'pixel-3':'assets/pixel-memory-3.png' };
+    let memory = isSharedView
+      ? { title: sharedTitle.slice(0, 24), date: sharedDate, quote: sharedQuote >= 0 && sharedQuote < quotes.length ? sharedQuote : 0, theme: themeNames.includes(sharedTheme) ? sharedTheme : 'blush', photo: builtInPhotos[sharedPhoto] ? sharedPhoto : '' }
+      : JSON.parse(localStorage.getItem('anniversary-memory') || 'null') || { title: '我们相遇的日子', date: formatInput(defaultDate), quote: 0, theme: 'blush', photo: '' };
     if (!Number.isInteger(Number(memory.quote)) || !quotes[Number(memory.quote)]) memory.quote = 0;
     if (!themeNames.includes(memory.theme)) memory.theme = 'blush';
-    let pendingPhoto = null, removeStoredPhoto = false, currentPhotoUrl = '';
+    let pendingPhoto = null, pendingBuiltIn = null, removeStoredPhoto = false, currentPhotoUrl = '';
     const photoDB = new Promise((resolve, reject) => {
       const request = indexedDB.open('niannian-local', 1);
       request.onupgradeneeded = () => request.result.createObjectStore('photos');
@@ -209,12 +222,26 @@
       $('photoName').textContent = record?.name || '';
       $('uploadTitle').textContent = record ? '更换这张照片' : '选择或拖入一张照片';
     }
-    async function loadPhoto() { try { showPhoto(await getPhoto()); } catch (_) { $('storageBtn').title = '当前浏览器无法访问本地图片存储'; } }
+    function showBuiltIn(key) {
+      if (currentPhotoUrl) URL.revokeObjectURL(currentPhotoUrl);
+      currentPhotoUrl = '';
+      $('memoryPhoto').src = builtInPhotos[key] || '';
+      $('storyLayout').classList.toggle('has-photo', Boolean(builtInPhotos[key]));
+      $('photoTools').classList.remove('visible');
+      document.querySelectorAll('[data-pixel-photo]').forEach(button => button.classList.toggle('selected', button.dataset.pixelPhoto === key));
+    }
+    async function loadPhoto() {
+      if (builtInPhotos[memory.photo]) return showBuiltIn(memory.photo);
+      document.querySelectorAll('[data-pixel-photo]').forEach(button => button.classList.remove('selected'));
+      if (isSharedView) return showPhoto(null);
+      try { showPhoto(await getPhoto()); } catch (_) { $('storageBtn').title = '当前浏览器无法访问本地图片存储'; }
+    }
     function choosePhoto(file) {
       if (!file) return;
       if (!file.type.startsWith('image/')) return alert('请选择图片文件。');
       if (file.size > 12 * 1024 * 1024) return alert('图片不能超过 12 MB。');
-      pendingPhoto = file; removeStoredPhoto = false;
+      pendingPhoto = file; pendingBuiltIn = ''; removeStoredPhoto = false;
+      document.querySelectorAll('[data-pixel-photo]').forEach(button => button.classList.remove('selected'));
       showPhoto({ blob:file, name:file.name });
     }
 
@@ -242,12 +269,13 @@
     }
     const editorTitles = { date:'选择故事开始的日子', theme:'换一种心情与色调', quote:'挑一句藏在心里的话', photo:'留住这一刻的模样', title:'为故事取一个名字' };
     function openEditor(section) {
-      pendingPhoto = null; removeStoredPhoto = false;
+      pendingPhoto = null; pendingBuiltIn = null; removeStoredPhoto = false;
       document.querySelectorAll('.form-section').forEach(group => {
         const active = group.dataset.section === section;
         group.hidden = !active;
         group.querySelectorAll('input,select').forEach(field => field.disabled = !active);
       });
+      document.querySelector('[data-photo-note]').hidden = section !== 'photo';
       $('dialogTitle').textContent = editorTitles[section];
       $('dialog').showModal();
     }
@@ -259,10 +287,15 @@
     ['dragenter','dragover'].forEach(type => $('uploadZone').addEventListener(type, e => { e.preventDefault(); $('uploadZone').classList.add('dragging'); }));
     ['dragleave','drop'].forEach(type => $('uploadZone').addEventListener(type, e => { e.preventDefault(); $('uploadZone').classList.remove('dragging'); }));
     $('uploadZone').addEventListener('drop', e => choosePhoto(e.dataTransfer.files[0]));
-    $('removePhoto').addEventListener('click', () => { pendingPhoto = null; removeStoredPhoto = true; showPhoto(null); });
+    document.querySelectorAll('[data-pixel-photo]').forEach(button => button.addEventListener('click', () => {
+      pendingPhoto = null; pendingBuiltIn = button.dataset.pixelPhoto; removeStoredPhoto = true; showBuiltIn(pendingBuiltIn);
+    }));
+    $('removePhoto').addEventListener('click', () => { pendingPhoto = null; pendingBuiltIn = ''; removeStoredPhoto = true; showPhoto(null); document.querySelectorAll('[data-pixel-photo]').forEach(button => button.classList.remove('selected')); });
     $('shareBtn').addEventListener('click', async () => {
       const url = new URL(location.href);
-      url.search = new URLSearchParams({ title: memory.title, date: memory.date, quote: memory.quote, theme: memory.theme }).toString();
+      const shareData = { title: memory.title, date: memory.date, quote: memory.quote, theme: memory.theme };
+      if (builtInPhotos[memory.photo]) shareData.photo = memory.photo;
+      url.search = new URLSearchParams(shareData).toString();
       const shareText = url.toString();
       try {
         await navigator.clipboard.writeText(shareText);
@@ -273,15 +306,15 @@
       const btn = $('shareBtn'); btn.textContent = '已复制 ✓';
       setTimeout(() => btn.textContent = '复制分享链接', 1800);
     });
-    async function closeWithoutSaving() { pendingPhoto = null; removeStoredPhoto = false; await loadPhoto(); $('dialog').close(); }
+    async function closeWithoutSaving() { pendingPhoto = null; pendingBuiltIn = null; removeStoredPhoto = false; await loadPhoto(); $('dialog').close(); }
     $('cancelBtn').addEventListener('click', closeWithoutSaving);
     $('dialog').addEventListener('click', e => { if (e.target === $('dialog')) closeWithoutSaving(); });
     $('form').addEventListener('submit', async e => {
-      e.preventDefault(); memory = { title: $('titleInput').value.trim(), date: $('dateInput').value, quote: Number($('quoteInput').value), theme: $('themeInput').value };
+      e.preventDefault(); memory = { title: $('titleInput').value.trim(), date: $('dateInput').value, quote: Number($('quoteInput').value), theme: $('themeInput').value, photo: pendingBuiltIn === null ? (memory.photo || '') : pendingBuiltIn };
       localStorage.setItem('anniversary-memory', JSON.stringify(memory));
       try { if (removeStoredPhoto) await deletePhoto(); else if (pendingPhoto) await savePhoto(pendingPhoto); } catch (_) { alert('图片未能保存，请检查浏览器的本地存储权限。'); }
       if (location.protocol !== 'file:') history.replaceState(null, '', location.pathname);
-      pendingPhoto = null; removeStoredPhoto = false; render(); await loadPhoto(); $('dialog').close();
+      pendingPhoto = null; pendingBuiltIn = null; removeStoredPhoto = false; render(); await loadPhoto(); $('dialog').close();
     });
     render(); loadPhoto();
   </script>
