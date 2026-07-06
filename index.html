@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>念念 · 纪念日</title>
+  <style>
+    :root {
+      --ink: #3f3734;
+      --muted: #8f827c;
+      --rose: #c87670;
+      --rose-deep: #a8504c;
+      --paper: rgba(255, 252, 247, .76);
+      --line: rgba(101, 78, 70, .13);
+      --bg-a: #f7f1ec;
+      --bg-b: #eaded7;
+      --glow: rgba(216,156,148,.22);
+    }
+    body[data-theme="moon"] { --ink:#34404f; --muted:#7d8998; --rose:#839bb8; --rose-deep:#5f7898; --paper:rgba(249,252,255,.78); --line:rgba(64,85,110,.12); --bg-a:#f1f5f8; --bg-b:#dce6ee; --glow:rgba(113,151,187,.2); }
+    body[data-theme="sage"] { --ink:#3d463f; --muted:#7e8b81; --rose:#8fa58f; --rose-deep:#657e69; --paper:rgba(251,252,247,.78); --line:rgba(72,96,76,.12); --bg-a:#f3f5ed; --bg-b:#dde5d7; --glow:rgba(128,158,126,.2); }
+    body[data-theme="violet"] { --ink:#433d4c; --muted:#8c8298; --rose:#a48fae; --rose-deep:#7b658a; --paper:rgba(252,249,255,.78); --line:rgba(91,72,106,.12); --bg-a:#f5f0f7; --bg-b:#e5dbe9; --glow:rgba(154,126,170,.2); }
+    body[data-theme="apricot"] { --ink:#493c34; --muted:#948376; --rose:#d29a72; --rose-deep:#ad704d; --paper:rgba(255,252,246,.8); --line:rgba(112,79,58,.12); --bg-a:#faf3e9; --bg-b:#eedcc9; --glow:rgba(220,157,107,.2); }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink);
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 15% 5%, rgba(255,255,255,.95), transparent 26%),
+        radial-gradient(circle at 90% 85%, var(--glow), transparent 30%),
+        linear-gradient(145deg, var(--bg-a), var(--bg-b) 65%, var(--bg-a));
+      display: grid; place-items: center; padding: 32px 18px;
+      overflow-x: hidden;
+      transition: background .55s ease, color .35s ease;
+    }
+    .grain { position: fixed; inset: 0; pointer-events: none; opacity: .17; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E"); }
+    .shell { width: min(920px, 100%); position: relative; animation: arrive .7s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes arrive { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .brand { display: flex; align-items: center; gap: 13px; margin: 0 0 20px 6px; font-family: Georgia, "Songti SC", serif; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; color: var(--rose-deep); border: 1px solid color-mix(in srgb, var(--rose) 55%, transparent); border-radius: 55% 45% 52% 48%; background: rgba(255,255,255,.32); box-shadow: inset 0 0 0 5px rgba(255,255,255,.2); transform: rotate(-6deg); }
+    .brand-mark svg { width: 22px; transform: rotate(6deg); }
+    .brand-copy { display:grid; gap:2px; }
+    .brand-copy strong { font-size: 19px; font-weight: 500; letter-spacing: .22em; }
+    .brand-copy small { color: var(--muted); font: 9px/1 Georgia, serif; letter-spacing: .28em; text-transform: uppercase; }
+    .card {
+      position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.72); border-radius: 30px;
+      background: var(--paper); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+      box-shadow: 0 28px 80px color-mix(in srgb, var(--ink) 15%, transparent), inset 0 1px rgba(255,255,255,.85);
+      padding: clamp(28px, 6vw, 66px);
+      transition: background .4s ease, box-shadow .4s ease;
+    }
+    .card::after { content: ""; position: absolute; width: 220px; height: 220px; border: 1px solid rgba(200,118,112,.16); border-radius: 50%; right: -95px; top: -110px; box-shadow: 0 0 0 26px rgba(200,118,112,.035), 0 0 0 54px rgba(200,118,112,.025); }
+    .eyebrow { display: flex; align-items: center; gap: 11px; color: var(--rose-deep); font-size: 12px; letter-spacing: .22em; font-weight: 700; }
+    .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--rose); }
+    h1 { font-family: Georgia, "Songti SC", serif; font-size: clamp(28px, 5vw, 50px); font-weight: 500; margin: 18px 0 10px; letter-spacing: .04em; }
+    .since { color: var(--muted); font-size: clamp(17px, 2.2vw, 20px); line-height: 1.6; letter-spacing: .025em; }
+    .hero { display: flex; align-items: end; gap: 20px; margin: clamp(36px, 7vw, 62px) 0 34px; }
+    .number { font-family: Georgia, serif; font-size: clamp(92px, 20vw, 174px); line-height: .72; font-weight: 400; color: var(--rose-deep); letter-spacing: -.07em; font-variant-numeric: lining-nums; text-shadow: 0 12px 30px color-mix(in srgb, var(--rose) 18%, transparent); }
+    .unit { padding-bottom: 4px; color: var(--muted); }
+    .unit strong { display: block; color: var(--ink); font-size: 24px; font-family: Georgia, "Songti SC", serif; font-weight: 500; margin-bottom: 4px; }
+    .details { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); padding: 22px 0; }
+    .detail { padding: 0 24px; border-right: 1px solid var(--line); }
+    .detail:first-child { padding-left: 0; } .detail:last-child { border: 0; }
+    .detail b { font: 400 25px Georgia, serif; display: block; margin-bottom: 5px; }
+    .detail span { color: var(--muted); font-size: 12px; letter-spacing: .1em; }
+    .quote { margin: 30px 0 0; color: #71635e; font: italic clamp(18px, 2.3vw, 21px)/1.8 Georgia, "Songti SC", serif; letter-spacing: .015em; transition: opacity .2s, transform .2s; }
+    .story-layout { display: grid; gap: 34px; align-items: center; }
+    .story-layout.has-photo { grid-template-columns: minmax(0, 1.08fr) minmax(230px, .72fr); }
+    .story-photo { display: none; position: relative; margin: 0; min-height: 330px; border-radius: 22px; overflow: hidden; background: var(--bg-b); box-shadow: 0 20px 44px color-mix(in srgb, var(--ink) 15%, transparent); }
+    .has-photo .story-photo { display: block; }
+    .story-photo img { display: block; width: 100%; height: 100%; min-height: 330px; max-height: 510px; object-fit: cover; }
+    .story-photo figcaption { position: absolute; inset: auto 12px 12px auto; padding: 7px 10px; border-radius: 999px; color: white; background: rgba(30,24,22,.48); backdrop-filter: blur(8px); font-size: 11px; letter-spacing: .08em; }
+    .actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 18px 4px 0; color: var(--muted); font-size: 12px; }
+    .action-buttons { display: flex; align-items: center; gap: 18px; }
+    .edit-menu { display:flex; align-items:center; gap:6px; padding:5px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.36); }
+    .edit-choice { color:var(--rose-deep); background:transparent; padding:7px 10px; border-radius:999px; font-size:12px; transition:background .2s, color .2s; }
+    .edit-choice:hover { color:white; background:var(--rose-deep); }
+    button { border: 0; cursor: pointer; font: inherit; }
+    .edit { color: var(--rose-deep); background: transparent; padding: 9px 2px; border-bottom: 1px solid rgba(168,80,76,.4); }
+    .share { color: white; background: var(--rose-deep); padding: 10px 17px; border-radius: 999px; box-shadow: 0 7px 18px rgba(168,80,76,.2); transition: transform .2s, background .2s; }
+    .share:hover { transform: translateY(-1px); background: #934541; }
+    .storage { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); background: transparent; padding: 8px 0; }
+    .storage svg { width: 19px; height: 19px; color: var(--rose-deep); }
+    .storage-dot { width: 7px; height: 7px; border-radius: 50%; background: #6fa17a; box-shadow: 0 0 0 4px rgba(111,161,122,.12); }
+    .upload-zone { display: grid; place-items: center; gap: 7px; min-height: 126px; padding: 18px; margin-top: 8px; border: 1px dashed #d8c7bd; border-radius: 16px; background: rgba(255,255,255,.55); color: var(--muted); text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+    .upload-zone:hover, .upload-zone.dragging { border-color: var(--rose); background: white; }
+    .upload-zone svg { width: 27px; color: var(--rose-deep); }
+    .upload-zone strong { color: var(--ink); font-size: 14px; }
+    .upload-zone small { font-size: 11px; }
+    #photoInput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .photo-tools { display: none; align-items: center; justify-content: space-between; margin-top: 9px; font-size: 12px; }
+    .photo-tools.visible { display: flex; }
+    .remove-photo { background: transparent; color: #a45b58; padding: 6px 0; }
+    .form-section[hidden] { display:none; }
+    dialog { border: 0; border-radius: 24px; padding: 0; color: var(--ink); background: #fffaf5; box-shadow: 0 28px 90px rgba(52,36,31,.3); width: min(430px, calc(100% - 32px)); }
+    dialog::backdrop { background: rgba(56,43,39,.35); backdrop-filter: blur(5px); }
+    form { padding: 32px; }
+    form h2 { font: 500 27px Georgia, "Songti SC", serif; margin: 0 0 24px; }
+    label { display: block; color: var(--muted); font-size: 12px; margin: 18px 0 7px; }
+    input, select { width: 100%; border: 1px solid #e5d9d2; background: white; border-radius: 12px; padding: 13px 14px; color: var(--ink); font: 15px inherit; outline: none; }
+    select { cursor: pointer; appearance: none; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a8504c' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center; padding-right: 42px; }
+    input:focus, select:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(200,118,112,.1); }
+    .form-actions { display: flex; gap: 10px; margin-top: 26px; }
+    .form-actions button { flex: 1; border-radius: 12px; padding: 12px; background: #eee5df; color: var(--ink); }
+    .form-actions .save { background: var(--rose-deep); color: white; }
+    @media (max-width: 720px) { .story-layout.has-photo { grid-template-columns: 1fr; } .story-photo { order: -1; min-height: 230px; } .story-photo img { min-height: 230px; max-height: 390px; } }
+    @media (max-width: 700px) { .actions { align-items:flex-end; } .action-buttons { flex-wrap:wrap; justify-content:flex-end; } .edit-menu { order:3; width:100%; justify-content:space-between; overflow:auto; } }
+    @media (max-width: 560px) { .card { border-radius: 24px; } .hero { gap: 13px; } .details { padding: 18px 0; } .detail { padding: 0 14px; } .detail b { font-size: 20px; } .actions { margin-top: 14px; align-items: flex-start; } .actions > span { display: none; } .action-buttons { width: 100%; gap: 8px; } .storage span:not(.storage-dot) { display:none; } .edit-choice { padding:7px 9px; } }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <main class="shell">
+    <div class="brand"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M18.6 15.5A7.8 7.8 0 0 1 8.5 5.4 7.8 7.8 0 1 0 18.6 15.5Z"/><path d="M16.8 4.2l.45 1.25 1.25.45-1.25.45-.45 1.25-.45-1.25-1.25-.45 1.25-.45.45-1.25Z"/></svg></span><span class="brand-copy"><strong>朝暮有你</strong><small>Always, with you</small></span></div>
+    <section class="card">
+      <div class="story-layout" id="storyLayout">
+        <div class="story-copy">
+          <div class="eyebrow">OUR STORY</div>
+          <h1 id="title">我们相遇的日子</h1>
+          <div class="since">始于 <span id="dateText"></span></div>
+          <div class="hero">
+            <div class="number" id="days">0</div>
+            <div class="unit"><strong>天</strong><span>仍在继续</span></div>
+          </div>
+          <div class="details">
+            <div class="detail"><b id="years">0</b><span>整年</span></div>
+            <div class="detail"><b id="months">0</b><span>个月</span></div>
+            <div class="detail"><b id="restDays">0</b><span>又几天</span></div>
+          </div>
+          <p class="quote" id="quote"></p>
+        </div>
+        <figure class="story-photo" id="photoFrame"><img id="memoryPhoto" alt="纪念照片" /><figcaption>我们的记忆</figcaption></figure>
+      </div>
+    </section>
+    <div class="actions">
+      <span>每一天，都是新的纪念。</span>
+      <div class="action-buttons"><button class="storage" id="storageBtn" title="图片和纪念信息仅保存在这台设备"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="7.5" ry="3"/><path d="M4.5 5v7c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V5M4.5 12v7c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-7"/></svg><span>本地保存</span><i class="storage-dot"></i></button><div class="edit-menu" aria-label="自定义页面"><button class="edit-choice" data-editor="date">日期</button><button class="edit-choice" data-editor="theme">色调</button><button class="edit-choice" data-editor="quote">情话</button><button class="edit-choice" data-editor="photo">照片</button><button class="edit-choice" data-editor="title">标题</button></div><button class="share" id="shareBtn">复制分享链接</button></div>
+    </div>
+  </main>
+
+  <dialog id="dialog">
+    <form id="form">
+      <h2 id="dialogTitle">写下值得记住的日子</h2>
+      <div class="form-section" data-section="title"><label for="titleInput">纪念日名称</label><input id="titleInput" maxlength="24" placeholder="例如：我们相遇的日子" required /></div>
+      <div class="form-section" data-section="date"><label for="dateInput">开始日期</label><input id="dateInput" type="date" required /></div>
+      <div class="form-section" data-section="quote"><label for="quoteInput">想说的话</label><select id="quoteInput"></select></div>
+      <div class="form-section" data-section="theme"><label for="themeInput">页面色系</label><select id="themeInput">
+        <option value="blush">雾粉 · 温柔浪漫</option>
+        <option value="moon">月蓝 · 安静清澈</option>
+        <option value="sage">鼠尾草 · 自然治愈</option>
+        <option value="violet">暮紫 · 梦幻优雅</option>
+        <option value="apricot">暖杏 · 柔和温暖</option>
+      </select></div>
+      <div class="form-section" data-section="photo"><label for="photoInput">纪念照片</label>
+      <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+      <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="上传纪念照片"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5M12 3v12m-4-8 4-4 4 4"/></svg><strong id="uploadTitle">选择或拖入一张照片</strong><small>支持 JPG、PNG、WebP、GIF，最大 12 MB</small></div>
+      <div class="photo-tools" id="photoTools"><span id="photoName"></span><button type="button" class="remove-photo" id="removePhoto">移除照片</button></div></div>
+      <div class="form-actions"><button type="button" id="cancelBtn">取消</button><button class="save" type="submit">保存纪念</button></div>
+    </form>
+  </dialog>
+  <script>
+    const $ = id => document.getElementById(id);
+    const today = new Date();
+    const defaultDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+    const formatInput = d => [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-');
+    const quotes = [
+      '日子一天天走过，而值得记住的瞬间，始终闪着光。',
+      '岁月有尽头，而我对你的心意没有。',
+      '与你有关的日子，每一天都值得纪念。',
+      '人间有许多寻常，你是我唯一的例外。',
+      '山水一程，三生有幸，余生仍想与你同行。',
+      '喜欢是初见时的心动，爱是岁月里的长久。',
+      '世界不停向前，而我一直选择站在你身边。',
+      '漫长时光里，最温柔的事就是与你一起变老。',
+      '故事从那一天开始，往后的每页都有你。',
+      '不是日子特别，而是那一天遇见了特别的你。',
+      '朝朝暮暮，岁岁年年，所念皆是你。',
+      '愿往后的每个纪念日，我们都仍在彼此身旁。'
+    ];
+    $('quoteInput').innerHTML = quotes.map((quote, index) => `<option value="${index}">${quote}</option>`).join('');
+    const params = new URLSearchParams(location.search);
+    const themeNames = ['blush', 'moon', 'sage', 'violet', 'apricot'];
+    const sharedTitle = params.get('title'), sharedDate = params.get('date'), sharedQuote = Number(params.get('quote')), sharedTheme = params.get('theme');
+    const validSharedDate = /^\d{4}-\d{2}-\d{2}$/.test(sharedDate || '');
+    let memory = (sharedTitle && validSharedDate)
+      ? { title: sharedTitle.slice(0, 24), date: sharedDate, quote: sharedQuote >= 0 && sharedQuote < quotes.length ? sharedQuote : 0, theme: themeNames.includes(sharedTheme) ? sharedTheme : 'blush' }
+      : JSON.parse(localStorage.getItem('anniversary-memory') || 'null') || { title: '我们相遇的日子', date: formatInput(defaultDate), quote: 0, theme: 'blush' };
+    if (!Number.isInteger(Number(memory.quote)) || !quotes[Number(memory.quote)]) memory.quote = 0;
+    if (!themeNames.includes(memory.theme)) memory.theme = 'blush';
+    let pendingPhoto = null, removeStoredPhoto = false, currentPhotoUrl = '';
+    const photoDB = new Promise((resolve, reject) => {
+      const request = indexedDB.open('niannian-local', 1);
+      request.onupgradeneeded = () => request.result.createObjectStore('photos');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    async function photoStore(mode, action) {
+      const db = await photoDB, tx = db.transaction('photos', mode), store = tx.objectStore('photos');
+      return new Promise((resolve, reject) => { const req = action(store); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); });
+    }
+    const getPhoto = () => photoStore('readonly', store => store.get('main'));
+    const savePhoto = file => photoStore('readwrite', store => store.put({ blob:file, name:file.name, updated:Date.now() }, 'main'));
+    const deletePhoto = () => photoStore('readwrite', store => store.delete('main'));
+    function showPhoto(record) {
+      if (currentPhotoUrl) URL.revokeObjectURL(currentPhotoUrl);
+      currentPhotoUrl = record?.blob ? URL.createObjectURL(record.blob) : '';
+      $('memoryPhoto').src = currentPhotoUrl;
+      $('storyLayout').classList.toggle('has-photo', Boolean(currentPhotoUrl));
+      $('photoTools').classList.toggle('visible', Boolean(record));
+      $('photoName').textContent = record?.name || '';
+      $('uploadTitle').textContent = record ? '更换这张照片' : '选择或拖入一张照片';
+    }
+    async function loadPhoto() { try { showPhoto(await getPhoto()); } catch (_) { $('storageBtn').title = '当前浏览器无法访问本地图片存储'; } }
+    function choosePhoto(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) return alert('请选择图片文件。');
+      if (file.size > 12 * 1024 * 1024) return alert('图片不能超过 12 MB。');
+      pendingPhoto = file; removeStoredPhoto = false;
+      showPhoto({ blob:file, name:file.name });
+    }
+
+    function parseDate(value) { const [y,m,d] = value.split('-').map(Number); return new Date(y, m-1, d); }
+    function calendarDiff(start, end) {
+      let years = end.getFullYear() - start.getFullYear();
+      let anchor = new Date(start); anchor.setFullYear(start.getFullYear() + years);
+      if (anchor > end) { years--; anchor = new Date(start); anchor.setFullYear(start.getFullYear() + years); }
+      let months = 0, next = new Date(anchor);
+      while (true) { next = new Date(anchor); next.setMonth(anchor.getMonth() + 1); if (next > end) break; anchor = next; months++; }
+      const days = Math.floor((Date.UTC(end.getFullYear(),end.getMonth(),end.getDate()) - Date.UTC(anchor.getFullYear(),anchor.getMonth(),anchor.getDate())) / 86400000);
+      return { years, months, days };
+    }
+    function render() {
+      const start = parseDate(memory.date), now = new Date();
+      const total = Math.max(0, Math.floor((Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()) - Date.UTC(start.getFullYear(),start.getMonth(),start.getDate())) / 86400000));
+      const diff = start <= now ? calendarDiff(start, now) : {years:0, months:0, days:0};
+      $('title').textContent = memory.title;
+      $('dateText').textContent = `${start.getFullYear()} 年 ${start.getMonth()+1} 月 ${start.getDate()} 日`;
+      $('days').textContent = total.toLocaleString('zh-CN');
+      $('years').textContent = diff.years; $('months').textContent = diff.months; $('restDays').textContent = diff.days;
+      $('quote').textContent = `“${quotes[memory.quote]}”`;
+      document.body.dataset.theme = memory.theme;
+      $('titleInput').value = memory.title; $('dateInput').value = memory.date; $('quoteInput').value = memory.quote; $('themeInput').value = memory.theme; $('dateInput').max = formatInput(now);
+    }
+    const editorTitles = { date:'选择故事开始的日子', theme:'换一种心情与色调', quote:'挑一句藏在心里的话', photo:'留住这一刻的模样', title:'为故事取一个名字' };
+    function openEditor(section) {
+      pendingPhoto = null; removeStoredPhoto = false;
+      document.querySelectorAll('.form-section').forEach(group => {
+        const active = group.dataset.section === section;
+        group.hidden = !active;
+        group.querySelectorAll('input,select').forEach(field => field.disabled = !active);
+      });
+      $('dialogTitle').textContent = editorTitles[section];
+      $('dialog').showModal();
+    }
+    document.querySelectorAll('[data-editor]').forEach(button => button.addEventListener('click', () => openEditor(button.dataset.editor)));
+    $('storageBtn').addEventListener('click', () => { openEditor('photo'); setTimeout(() => $('uploadZone').focus(), 80); });
+    $('uploadZone').addEventListener('click', () => $('photoInput').click());
+    $('uploadZone').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('photoInput').click(); } });
+    $('photoInput').addEventListener('change', e => choosePhoto(e.target.files[0]));
+    ['dragenter','dragover'].forEach(type => $('uploadZone').addEventListener(type, e => { e.preventDefault(); $('uploadZone').classList.add('dragging'); }));
+    ['dragleave','drop'].forEach(type => $('uploadZone').addEventListener(type, e => { e.preventDefault(); $('uploadZone').classList.remove('dragging'); }));
+    $('uploadZone').addEventListener('drop', e => choosePhoto(e.dataTransfer.files[0]));
+    $('removePhoto').addEventListener('click', () => { pendingPhoto = null; removeStoredPhoto = true; showPhoto(null); });
+    $('shareBtn').addEventListener('click', async () => {
+      const url = new URL(location.href);
+      url.search = new URLSearchParams({ title: memory.title, date: memory.date, quote: memory.quote, theme: memory.theme }).toString();
+      const shareText = url.toString();
+      try {
+        await navigator.clipboard.writeText(shareText);
+      } catch (_) {
+        const box = document.createElement('textarea'); box.value = shareText; box.style.position = 'fixed'; box.style.opacity = '0';
+        document.body.appendChild(box); box.select(); document.execCommand('copy'); box.remove();
+      }
+      const btn = $('shareBtn'); btn.textContent = '已复制 ✓';
+      setTimeout(() => btn.textContent = '复制分享链接', 1800);
+    });
+    async function closeWithoutSaving() { pendingPhoto = null; removeStoredPhoto = false; await loadPhoto(); $('dialog').close(); }
+    $('cancelBtn').addEventListener('click', closeWithoutSaving);
+    $('dialog').addEventListener('click', e => { if (e.target === $('dialog')) closeWithoutSaving(); });
+    $('form').addEventListener('submit', async e => {
+      e.preventDefault(); memory = { title: $('titleInput').value.trim(), date: $('dateInput').value, quote: Number($('quoteInput').value), theme: $('themeInput').value };
+      localStorage.setItem('anniversary-memory', JSON.stringify(memory));
+      try { if (removeStoredPhoto) await deletePhoto(); else if (pendingPhoto) await savePhoto(pendingPhoto); } catch (_) { alert('图片未能保存，请检查浏览器的本地存储权限。'); }
+      if (location.protocol !== 'file:') history.replaceState(null, '', location.pathname);
+      pendingPhoto = null; removeStoredPhoto = false; render(); await loadPhoto(); $('dialog').close();
+    });
+    render(); loadPhoto();
+  </script>
+</body>
+</html>
